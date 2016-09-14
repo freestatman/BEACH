@@ -749,12 +749,13 @@ BeachServer <- function(input,output, session){
     currTabL <<- list()
     currTabL_i <- 1
     
-    tfl.h<<-ifelse(is.na(as.numeric(strsplit(input$hwr,split=';')[[1]])[1]), 480, 
-                 as.numeric(strsplit(input$hwr,split=';')[[1]])[1])
-    tfl.w<<-ifelse(is.na(as.numeric(strsplit(input$hwr,split=';')[[1]])[2]), 480, 
-                  as.numeric(strsplit(input$hwr,split=';')[[1]])[2])
-    tfl.r<<-ifelse(is.na(as.numeric(strsplit(input$hwr,split=';')[[1]])[3]), 72, 
-               as.numeric(strsplit(input$hwr,split=';')[[1]])[3])
+    hwr.c <- as.character(input$hwr)
+    tfl.h<<-ifelse(is.na(as.numeric(strsplit(hwr.c,split=';')[[1]])[1]), 480, 
+                 as.numeric(strsplit(hwr.c, split=';')[[1]])[1])
+    tfl.w<<-ifelse(is.na(as.numeric(strsplit(hwr.c,split=';')[[1]])[2]), 480, 
+                  as.numeric(strsplit(hwr.c, split=';')[[1]])[2])
+    tfl.r<<-ifelse(is.na(as.numeric(strsplit(hwr.c,split=';')[[1]])[3]), 72, 
+               as.numeric(strsplit(hwr.c, split=';')[[1]])[3])
 
     if (all(!Vdic()$Type[AnalyN()] %in% c('Figure','Table'))||
       all(eval(parse(text=Vdic()$Condition[AnalyN()])))){

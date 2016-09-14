@@ -8,7 +8,7 @@ CleanEnvir <<- function(pattern = "tmp") {
   print(objs)
   rm(list = objs[grep("tmp", objs)], pos = ".GlobalEnv")
 }
-print('global')
+#print('global')
 CleanEnvir()
 
 
