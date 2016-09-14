@@ -1,0 +1,21 @@
+Package: sas7bdat.parso
+Version: 0.1
+Date: 2014-09-08
+Title: Read sas7bdat files with Parso
+Author: Matt Shotwell
+Maintainer: Matt Shotwell <matt.shotwell@vanderbilt.edu>
+Description: Read sas7bdat files with the Java Parso library by GGASoftware.
+Depends: R (>= 2.7.0), rJava (>= 0.5-0), data.table (>= 1.9.4)
+SystemRequirements: Java (>= 1.7)
+License: GPL-3
+RemoteType: github
+RemoteHost: api.github.com
+RemoteRepo: sas7bdat.parso
+RemoteUsername: biostatmatt
+RemoteRef: master
+RemoteSha: 867f26a2ffdc87f16ec1856105804cdd98f99edd
+GithubRepo: sas7bdat.parso
+GithubUsername: biostatmatt
+GithubRef: master
+GithubSHA1: 867f26a2ffdc87f16ec1856105804cdd98f99edd
+Built: R 3.2.0; ; 2016-06-08 17:32:54 UTC; unix
