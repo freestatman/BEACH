@@ -5,7 +5,7 @@
 
 CleanEnvir <<- function(pattern = "tmp") {
   objs <- ls(pos = ".GlobalEnv")
-  print(objs)
+  #print(objs)
   rm(list = objs[grep("tmp", objs)], pos = ".GlobalEnv")
 }
 #print('global')
