@@ -9,5 +9,6 @@ Please set up your default internet browser as google chrome
 Then, in your R console, please run the following code to run BEACH locally.
 
 library(shiny);
+
 runGitHub("BEACH", "DanniYuGithub");
 
