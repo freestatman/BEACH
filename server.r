@@ -17,7 +17,7 @@ if (TRUE) {    # header
 #required libraries
 if (TRUE){ 
     rm(list=ls())
-    
+     
     library(shiny)
   
     require(DT) #for render table
@@ -749,7 +749,10 @@ BeachServer <- function(input,output, session){
     currTabL <<- list()
     currTabL_i <- 1
     
-    hwr.c <- as.character(input$hwr)
+    if(is.null(input$hwr)) 
+      hwr.c <- ''
+    else 
+      hwr.c <- as.character(input$hwr)
     tfl.h<<-ifelse(is.na(as.numeric(strsplit(hwr.c,split=';')[[1]])[1]), 480, 
                  as.numeric(strsplit(hwr.c, split=';')[[1]])[1])
     tfl.w<<-ifelse(is.na(as.numeric(strsplit(hwr.c,split=';')[[1]])[2]), 480, 
@@ -1195,7 +1198,7 @@ BeachServer <- function(input,output, session){
       codelist<-merge(loalistT,Vdic(),by=c('Request.Name'),all.x=TRUE)
       codelist<<-codelist[order(codelist$order,codelist$Layout,decreasing=FALSE),]
       
-      if(is.null(input$tumor) | is.na(input$tumor))
+      if(is.null(input$tumor) || is.na(input$tumor))
         title0<-paste0("Study: ",input$study,"\t\t", "  ")
       else
         title0<-paste0("Study: ",input$study,"\t\t","Tumor Type: ",input$tumor)
