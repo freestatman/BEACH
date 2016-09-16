@@ -15,7 +15,9 @@ if (TRUE) {    # header
   #  -----------------------------------------------------------------------------
 }
 
-library(shiny)
+if(inGithub){
+  library(shiny)
+}
 
 BeachUI <- fluidPage(
   
