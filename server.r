@@ -14,10 +14,12 @@ if (TRUE) {    # header
   #  -----------------------------------------------------------------------------
 } #Header
  
-#required libraries
-if (TRUE){ 
+
     rm(list=ls())
-     
+    inGithub <- FALSE
+
+#required libraries
+if (inGithub){      
     library(shiny)
   
     require(DT) #for render table
