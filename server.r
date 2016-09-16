@@ -16,7 +16,7 @@ if (TRUE) {    # header
  
 
     rm(list=ls())
-    inGithub <<- FALSE
+    inGithub <<- TRUE
 
 #required libraries
 if (inGithub){      
