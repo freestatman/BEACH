@@ -237,6 +237,8 @@ runcode<-function(codelist, # merged dataset of loa and configuration file
         tmp00 <- try( as.numeric(tmp0) )
         if( class(tmp00)[1]=='try-error' || any(is.na(as.numeric(tmp0))) )
             say1 <- TRUE
+        else
+          say1 <-FALSE
         tmp<-ifelse(say1,
 	  paste0('c(\"',paste0(tmp0,collapse='\",\"'),'\")'),
           paste0('c(',paste0(codelist[i,params1[x]],collapse=','),')'))

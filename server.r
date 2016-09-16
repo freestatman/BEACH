@@ -1278,7 +1278,7 @@ BeachServer <- function(input,output, session){
       return(f1)
     },
     content=function(file){
-      if (is.null(input$infile))return(NULL)
+      #if (is.null(input$infile))return(NULL)
       if(is.null(input$tumor) || is.na(input$tumor) || gsub(" ", '', input$tumor)=='')
         title0<-c(paste0("Study: ",input$study), '')
       else
