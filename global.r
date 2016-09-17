@@ -11,7 +11,7 @@ CleanEnvir <<- function(pattern = "tmp") {
 #print('global')
 CleanEnvir()
 
- inGithub <<- TRUE
+ inGithub <- TRUE
  folder  <-'BEACH'
  htmlPath <- ''
 
