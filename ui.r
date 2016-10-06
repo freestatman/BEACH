@@ -10,13 +10,14 @@ if (TRUE) {    # header
   #  Ver   Author                    Program History Description
   #  ----  ---------------            --------------------------------------------
   #  001   Danni Yu                   program (2013-now)
-  #  002   Chenchen Yu                program (2014-2015)
+  #  002   Chenchen Yu                program (2013-2014)
   #
   #  -----------------------------------------------------------------------------
 }
+myVersionCtr <<- "BEACHv1.1.1"
 
 if(inGithub){
-  library(shiny)
+#  library(shiny)
 }
 
 BeachUI <- fluidPage(
@@ -61,6 +62,7 @@ BeachUI <- fluidPage(
     id = "controls1", class = "panel panel-default", fixed = FALSE,
     draggable = TRUE, top = "0%", left = "auto", right = "0%", bottom ="auto",
     width = "20%", height = "auto" , 
+       p(style="color:black;",strong(myVersionCtr)),
        checkboxInput("collSidebar", "Show left sidebar for data input", value=TRUE),
        checkboxInput("useDT", "use renderDataTable", value=FALSE),
        radioButtons("ncol.widg.rd", "number of columns", c(1, 2, 3), inline=TRUE),
@@ -139,3 +141,5 @@ BeachUI <- fluidPage(
   
 ) #Generate Tabs
 shinyUI(BeachUI)
+
+

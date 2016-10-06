@@ -6,6 +6,10 @@ dep.packages <- c("shiny", "DT", "haven", "xtable", "rtf", "plyr", "sas7bdat", "
 na.packages <- dep.packages[!dep.packages %in% installed.packages()]
 if (length(na.packages)>0) install.packages(na.packages);
 
+if(!"sas7bdat.parso" %in% installed.packages()) devtools::install_github('BioStatMatt/sas7bdat.parso', force=TRUE)
+
+
+
 Please set up your default internet browser as google chrome
 Then, in your R console, please run the following code to run BEACH locally.
 

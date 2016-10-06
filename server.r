@@ -22,12 +22,14 @@ if (TRUE) {    # header
 if (inGithub){      
     library(shiny)
   
-    require(DT) #for render table
-    require(sas7bdat) 
-    require(haven) #for loading SAS datasets
+    library(DT) #for render table
+    library(sas7bdat) 
+    library(haven) #for loading SAS datasets
   
     #load a libray not in cran
-    require(sas7bdat.parso, lib.loc="libs")
+#    library(sas7bdat.parso, lib.loc="libs")
+    #library(sas7bdat.parso)
+#    requireNamespace('sas7bdat.parso')
     
     
     library(xtable)
@@ -35,6 +37,7 @@ if (inGithub){
     library(plyr)
     
     library(WriteXLS)
+    library(readxl)
     library(SASxport)
     
  } #required libraries
@@ -51,6 +54,8 @@ if (TRUE){
   ault <<- '480, 480, NA'
   tfl.h <<- tfl.w <<- tfl.r <<- NA
   
+  infilelab <<- 'Step 1 Upload data (csv, sas7bdat, xlsx, rdata, xpt)'
+  infilenm <<- c('.csv', '.sas7bdat', '.xlsx', '.rdata', '.Rdata', '.xpt')
 
   na_sign <<- c('NA', '', '.', ' ', '-', 'NaN')
   
@@ -99,18 +104,20 @@ if (TRUE){
                           xlsx1=NULL, 
 			  na.string=c('NA', '', '.', ' ', '-', 'NaN'),
                           SF=FALSE, use_haven=T, ...){
-    require(haven)
-    require(readxl)
+    #load a libray not in cran
+    library(sas7bdat.parso, lib.loc="libs")
+    
     ot<-NULL
     if(is.null(name)){name<-file}
     is.sas<-grepl('.sas7bdat', tolower(name), fixed=TRUE)
     is.csv<-grepl('.csv', tolower(name), fixed=TRUE)
     is.xlsx<-grepl('.xls', tolower(name), fixed=TRUE)
     is.rdat<-grepl('.rda', tolower(name), fixed=TRUE)
+    is.xpt<-grepl('.xpt', tolower(name), fixed=TRUE)
     if(is.sas){
       ot.t <- try(ot<-haven::read_sas(file))
-      if(class(ot.t)[1]=='try-error')
-         try(ot<-read.sas7bdat.parso(file))
+      if(class(ot.t)[1]=='try-error' && requireNamespace("sas7bdat.parso", quietly = TRUE))
+         try(ot<-sas7bdat.parso::read.sas7bdat.parso(file))
       if(is.null(ot)){
          return(paste("Error: fail to import", name))
       }
@@ -138,13 +145,15 @@ if (TRUE){
     }else if (is.xlsx){
       if(is.null(xlsx1))
         xlsx1 <-1
-      tm<-try(ot<- read_excel(path=file, sheet=xlsx1, col_names=header, na=na.string, ...))
+      tm<-try(ot<- readxl::read_excel(path=file, sheet=xlsx1, col_names=header, na=na.string, ...))
       if(class(tm)=='try-error')
         tm<-try(ot<-readLines(con=file))    
     }else if (is.rdat){ 
       load(file, ot<-new.env())
       ot <- as.list(ot)
       names(ot) <- paste0(name, ".", names(ot))
+    }else if (is.xpt){
+      ot.t <- try( ot <- SASxport::read.xport(file) )
     }else{
       ot<-NA
     }
@@ -255,7 +264,7 @@ BeachServer <- function(input,output, session){
     
     wp.out <- paste0("<div class=\"panel panel-default draggable\" ",
                      "id=\"controls1\" ",
-                     "style=\"top:35%;left:auto;right:0%;bottom:auto;width:",
+                     "style=\"top:50%;left:auto;right:0%;bottom:auto;width:",
                      widget.panel.width,
                      ";height:auto", #widget.panel.height,
                      ";position:absolute;cursor:move; ",
@@ -480,8 +489,8 @@ BeachServer <- function(input,output, session){
                               radioButtons('csv_enc', 'Encoding format for CSV file', choices=c('UTF-8', 'unkown'), inline=TRUE),
                               radioButtons('checknames', 'Change " " or "-" in column names into "."', 
                                            choices=c(FALSE, TRUE), inline=TRUE),
-                              fileInput('infile', label='Step 1 Upload data (csv, sas7bdat, xlsx, rdata)',
-                                        accept=c('.csv', '.sas7bdat', '.xlsx', '.rdata', '.Rdata'), 
+                              fileInput('infile', label=infilelab,
+                                        accept=infilenm, 
 					multiple=TRUE)))
     }else{
       
@@ -589,8 +598,8 @@ BeachServer <- function(input,output, session){
           return(
             conditionalPanel(
               condition='true',
-              fileInput('infile', label='Step 1 Upload data (csv, sas7bdat, xlsx, rdata)',
-                        accept=c('.csv', '.sas7bdat', '.xlsx', '.rdata', '.Rdata'), multiple=TRUE),
+              fileInput('infile', label=infilelab,
+                        accept=infilenm, multiple=TRUE),
               shiny::HTML(c(stnm, "<br>", 
                             tmtp, datanote)) ) )
         }else{
@@ -614,8 +623,8 @@ BeachServer <- function(input,output, session){
             conditionalPanel('true',
                              radioButtons('csv_enc', 'Encoding format for CSV file', choices=c('UTF-8', 'unkown'), inline=TRUE),
                              radioButtons('checknames', 'Change "_" in column names into "."', choices=c(FALSE, TRUE), inline=TRUE),
-                             fileInput('infile', label='Step 1 Upload data (csv, sas7bdat, xlsx, rdata)',
-                                       accept=c('.csv', '.sas7bdat', '.xlsx', '.rdata', '.Rdata'), 
+                             fileInput('infile', label=infilelab,
+                                       accept=infilenm, 
 				       multiple=TRUE),
                              shiny::HTML(c(stnm, "<br>", tmtp, datanote)) ))
         }else{
@@ -1000,8 +1009,10 @@ BeachServer <- function(input,output, session){
                      div(class='span2', actionButton(inputId="add_analysis",label="Add Analysis")),
                      sliderInput('figSize', label="Relative Size", 
 		         min=0.1, max=1, value=1, step=0.1, animate=FALSE),
-		         uiOutput('hwrCtrl'),
-                     div(class='row'),
+		         uiOutput('hwrCtrl'), 
+		         div( downloadButton('getEPS','download EPS plot'),
+		              downloadButton('getPDF','download PDF plot') ),
+                     #div(class='row'),
                      div(class='span12', 
                          uiOutput("TFL"), 
                          uiOutput("footnote"), br(), 
@@ -1269,6 +1280,40 @@ BeachServer <- function(input,output, session){
       write.csv(LOA()[loaTF(),],file,row.names=FALSE, fileEncoding = 'UTF-8')
     }) # Download LOA
   
+  #------ Download EPS plot ------#
+  output$getEPS <- downloadHandler(
+    filename="current_BEACH_EPS_Plot.eps",
+    content =function(file){
+      postscript(file, 
+          height=tfl.h/tfl.r, 
+          width=tfl.w/tfl.r,  
+          pointsize = 1/tfl.r )
+      plottry<-try(eval(parse(text=input0.code[1])))
+      if(class(plottry)[1]=='try-error') {
+        plot(0,axes=F, col='white',ylab='',xlab='')
+        legend('top', 'Plotting\nError', cex=5, bty='n', text.col='red')
+      }
+      dev.off()
+    }
+  )
+  #------ Download PDF plot ------#
+  output$getPDF <- downloadHandler(
+    filename="current_BEACH_PDF_Plot.pdf",
+    content =function(file){
+        pdf(file, 
+                   height=tfl.h/tfl.r, 
+                   width=tfl.w/tfl.r,  
+                   pointsize = 1/tfl.r )
+      plottry<-try(eval(parse(text=input0.code[1])))
+      if(class(plottry)[1]=='try-error') {
+        plot(0,axes=F, col='white',ylab='',xlab='')
+        legend('top', 'Plotting\nError', cex=5, bty='n', text.col='red')
+      }
+      dev.off()
+    }
+  )
+  
+    
   #--------save output as a RTF file------------#
   output$save_output<-downloadHandler(
     filename=function(){
@@ -1280,7 +1325,7 @@ BeachServer <- function(input,output, session){
       return(f1)
     },
     content=function(file){
-      #if (is.null(input$infile))return(NULL)
+      if (is.null(input$infile))return(NULL)
       if(is.null(input$tumor) || is.na(input$tumor) || gsub(" ", '', input$tumor)=='')
         title0<-c(paste0("Study: ",input$study), '')
       else
