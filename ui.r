@@ -14,11 +14,11 @@ if (TRUE) {    # header
   #
   #  -----------------------------------------------------------------------------
 }
-myVersionCtr <<- "BEACHv1.1.1"
+myVersionCtr <<- "BEACHv1.1.2"
 
-if(inGithub){
+#if(inGithub){
 #  library(shiny)
-}
+#}
 
 BeachUI <- fluidPage(
   

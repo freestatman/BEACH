@@ -2,7 +2,7 @@ if (TRUE) {    # header
   #/*soh*************************************************************************
   # CODE NAME             : server.r
   # CODE TYPE							: Program 
-  # DATE OF UPDATE:         16-Aug-2016
+  # DATE OF UPDATE:         6-Oct-2016
   # DESCRIPTION           : Server code for BEACH app 
   # SOFTWARE/VERSION#     : R 3.2.0
   # INFRASTRUCTURE        : 
@@ -17,9 +17,17 @@ if (TRUE) {    # header
 
     rm(list=ls())
   
-
+#install packages
+if(TRUE){
+  dep.packages <- c("shiny", "DT", "haven", "xtable", "rtf", "plyr", "sas7bdat", "WriteXLS", "SASxport", "rJava", "devtools");
+  na.packages <- dep.packages[!dep.packages %in% installed.packages()]
+  if (length(na.packages)>0) install.packages(na.packages);
+  
+  if(!"sas7bdat.parso" %in% installed.packages()) devtools::install_github('BioStatMatt/sas7bdat.parso', force=TRUE)
+}
+    
 #required libraries
-if (inGithub){      
+if(TRUE){    
     library(shiny)
   
     library(DT) #for render table
@@ -27,10 +35,12 @@ if (inGithub){
     library(haven) #for loading SAS datasets
   
     #load a libray not in cran
-#    library(sas7bdat.parso, lib.loc="libs")
-    #library(sas7bdat.parso)
-#    requireNamespace('sas7bdat.parso')
-    
+    if(TRUE){
+       if(!"sas7bdat.parso" %in% installed.packages()) 
+         devtools::install_github('BioStatMatt/sas7bdat.parso', force=TRUE)
+    } else {
+      library(sas7bdat.parso, lib.loc="libs")
+    }
     
     library(xtable)
     library(rtf)
@@ -105,7 +115,7 @@ if (TRUE){
 			  na.string=c('NA', '', '.', ' ', '-', 'NaN'),
                           SF=FALSE, use_haven=T, ...){
     #load a libray not in cran
-    library(sas7bdat.parso, lib.loc="libs")
+    #library(sas7bdat.parso, lib.loc="libs")
     
     ot<-NULL
     if(is.null(name)){name<-file}
@@ -662,11 +672,11 @@ BeachServer <- function(input,output, session){
   })
  
   output$getData<-renderUI({#Declare global variables#
-    if(!is.null(input$infile)|!is.null(input$infileR)){
+#    if(!is.null(input$infile)|!is.null(input$infileR)){
       tm.Vdic<-Vdic()
       if(!is.na(tm.Vdic$select.label))
         source(file.path(local.path0, tm.Vdic$Source[1]))
-    }
+#    }
     return(NULL)
   }) # Data manipulation for the uploaded dataset
   
@@ -732,29 +742,64 @@ BeachServer <- function(input,output, session){
   #-------Output results to the current screen------------#
   
   output$save_data_ext<-renderUI({
-#    if(is.null(input$infile)&&is.null(input$infileR))return(NULL)
-    choiceN<-AnalyN()[Vdic()$Type[AnalyN()]=='Table']#|
-                        #grepl("dnamicData", Vdic()$PlotCode[AnalyN()], fixed=TRUE)]
-    if(length(choiceN)==0)return(NULL)
-    choice<-sapply(choiceN, 
-      function(x){
-        ifelse(substr(Vdic()$Title[x],1,5)=='paste',
-	  eval(parse(text=Vdic()$Title[x])),
-	  Vdic()$Title[x])
-      })
-    conditionalPanel(condition='true',
-                     checkboxGroupInput('multdat',
-		       'Please Choose a table to save',
-		       choices=choice,
-		       selected=NULL, inline =TRUE),
-                     radioButtons('multdat_ext', 
-		      'Format', 
-		      c('csv','rdata','xpt','xls','SAS code'='sas'), 
-		      selected = NULL, 
-		      inline = TRUE),
-                     downloadButton("save_data","Save Data")                     
-    )
+
+    choiceN<-AnalyN()[Vdic()$Type[AnalyN()]=='Table']
+    choiceP<-AnalyN()[Vdic()$Type[AnalyN()]=='Figure']
+    if(length(choiceN)==0 & length(choiceP)==0)return(NULL)
+    if(length(choiceN)==0 & length(choiceP)>0){
+      return( conditionalPanel(condition='true',
+        div( downloadButton('getEPS','download EPS plot'),
+           downloadButton('getPDF','download PDF plot') ) 
+      ))
+    }
+    if(length(choiceN)>0 & length(choiceP)==0){
+      choice<-sapply(choiceN, 
+                     function(x){
+                       ifelse(substr(Vdic()$Title[x],1,5)=='paste',
+                              eval(parse(text=Vdic()$Title[x])),
+                              Vdic()$Title[x])
+                     })
+      return( conditionalPanel(condition='true',
+                       checkboxGroupInput('multdat',
+                                          'Please Choose a table to save',
+                                          choices=choice,
+                                          selected=NULL, inline =TRUE),
+                       radioButtons('multdat_ext', 
+                                    'Format', 
+                                    c('csv','rdata','xpt','xls','SAS code'='sas'), 
+                                    selected = NULL, 
+                                    inline = TRUE),
+                       downloadButton("save_data","Save Data")                     
+      ) )
+      
+    }
+    
+    if(length(choiceN)>0 & length(choiceP)>0){
+      choice<-sapply(choiceN, 
+                     function(x){
+                       ifelse(substr(Vdic()$Title[x],1,5)=='paste',
+                              eval(parse(text=Vdic()$Title[x])),
+                              Vdic()$Title[x])
+                     })
+      return( conditionalPanel(condition='true',
+                               div( downloadButton('getEPS','download EPS plot'),
+                                    downloadButton('getPDF','download PDF plot') ),
+                               checkboxGroupInput('multdat',
+                                                  'Please Choose a table to save',
+                                                  choices=choice,
+                                                  selected=NULL, inline =TRUE),
+                               radioButtons('multdat_ext', 
+                                            'Format', 
+                                            c('csv','rdata','xpt','xls','SAS code'='sas'), 
+                                            selected = NULL, 
+                                            inline = TRUE),
+                               downloadButton("save_data","Save Data")                     
+      ) )
+      
+    }   
+    
   })
+  
   output$TFL<-renderUI({
     plotcode <- NULL
     currTabL <<- list()
@@ -1010,8 +1055,8 @@ BeachServer <- function(input,output, session){
                      sliderInput('figSize', label="Relative Size", 
 		         min=0.1, max=1, value=1, step=0.1, animate=FALSE),
 		         uiOutput('hwrCtrl'), 
-		         div( downloadButton('getEPS','download EPS plot'),
-		              downloadButton('getPDF','download PDF plot') ),
+#		         div( downloadButton('getEPS','download EPS plot'),
+#		              downloadButton('getPDF','download PDF plot') ),
                      #div(class='row'),
                      div(class='span12', 
                          uiOutput("TFL"), 
@@ -1325,7 +1370,7 @@ BeachServer <- function(input,output, session){
       return(f1)
     },
     content=function(file){
-      if (is.null(input$infile))return(NULL)
+#      if (is.null(input$infile))return(NULL)
       if(is.null(input$tumor) || is.na(input$tumor) || gsub(" ", '', input$tumor)=='')
         title0<-c(paste0("Study: ",input$study), '')
       else
