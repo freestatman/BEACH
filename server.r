@@ -1055,9 +1055,6 @@ BeachServer <- function(input,output, session){
                      sliderInput('figSize', label="Relative Size", 
 		         min=0.1, max=1, value=1, step=0.1, animate=FALSE),
 		         uiOutput('hwrCtrl'), 
-#		         div( downloadButton('getEPS','download EPS plot'),
-#		              downloadButton('getPDF','download PDF plot') ),
-                     #div(class='row'),
                      div(class='span12', 
                          uiOutput("TFL"), 
                          uiOutput("footnote"), br(), 
@@ -1370,7 +1367,6 @@ BeachServer <- function(input,output, session){
       return(f1)
     },
     content=function(file){
-#      if (is.null(input$infile))return(NULL)
       if(is.null(input$tumor) || is.na(input$tumor) || gsub(" ", '', input$tumor)=='')
         title0<-c(paste0("Study: ",input$study), '')
       else

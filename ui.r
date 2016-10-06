@@ -16,9 +16,6 @@ if (TRUE) {    # header
 }
 myVersionCtr <<- "BEACHv1.1.2"
 
-#if(inGithub){
-#  library(shiny)
-#}
 
 BeachUI <- fluidPage(
   
