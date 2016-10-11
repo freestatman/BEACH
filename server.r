@@ -1053,7 +1053,7 @@ BeachServer <- function(input,output, session){
                      div(class='row'), div(class='span6', uiOutput('select')), 
                      div(class='span2', actionButton(inputId="add_analysis",label="Add Analysis")),
                      sliderInput('figSize', label="Relative Size", 
-		         min=0.1, max=1, value=1, step=0.1, animate=FALSE),
+		         min=0.1, max=1, value=0.3, step=0.1, animate=FALSE),
 		         uiOutput('hwrCtrl'), 
                      div(class='span12', 
                          uiOutput("TFL"), 
