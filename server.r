@@ -23,7 +23,7 @@ if(TRUE){
   na.packages <- dep.packages[!dep.packages %in% installed.packages()]
   if (length(na.packages)>0) install.packages(na.packages);
   
-  if(!"sas7bdat.parso" %in% installed.packages()) devtools::install_github('BioStatMatt/sas7bdat.parso', force=TRUE)
+  #if(!"sas7bdat.parso" %in% installed.packages()) devtools::install_github('BioStatMatt/sas7bdat.parso', force=TRUE)
 }
     
 #required libraries
@@ -35,11 +35,8 @@ if(TRUE){
     library(haven) #for loading SAS datasets
   
     #load a libray not in cran
-    if(TRUE){
-       if(!"sas7bdat.parso" %in% installed.packages()) 
-         devtools::install_github('BioStatMatt/sas7bdat.parso', force=TRUE)
-    } else {
-      library(sas7bdat.parso, lib.loc="libs")
+    if("sas7bdat.parso" %in% installed.packages() ){
+      library(sas7bdat.parso)
     }
     
     library(xtable)
@@ -126,10 +123,18 @@ if (TRUE){
     is.xpt<-grepl('.xpt', tolower(name), fixed=TRUE)
     if(is.sas){
       ot.t <- try(ot<-haven::read_sas(file))
-      if(class(ot.t)[1]=='try-error' && requireNamespace("sas7bdat.parso", quietly = TRUE))
+      if(class(ot.t)[1]=='try-error' && 
+	 "sas7bdat.parso" %in% installed.packages() &&
+	 requireNamespace("sas7bdat.parso", quietly = TRUE)) {
          try(ot<-sas7bdat.parso::read.sas7bdat.parso(file))
+      }
       if(is.null(ot)){
-         return(paste("Error: fail to import", name))
+	 if("sas7bdat.parso" %in% installed.packages() ){
+           return(paste("Error: fail to import", name))
+         }else{
+           return(paste("Error: fail to import", name,
+		       ". Please import sas7bdat.parso at GitHub."))
+	 }
       }
       ot <- data.frame(ot)
       for(i in 1:ncol(ot)){
