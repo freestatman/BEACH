@@ -18,3 +18,4 @@ runGitHub("BEACH", "DanniYuGithub");
 
 
 To install the package from R cran, please check the link https://cran.r-project.org/web/packages/BEACH/index.html
+library(shiny); library(DT); library(BEACH); runBEACH()
