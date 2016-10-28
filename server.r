@@ -865,7 +865,7 @@ BeachServer <- function(input,output, session){
 
       
       
-      addResourcePath('images',local.path3)
+      try( addResourcePath('images',local.path3) )
       if(Vdic()$Type[i]=='Figure'){ 
         if(length(input0.code)>0 && grepl("dynamicData", input0.code, fixed=TRUE)){
           dynamicCode<<-input0.code
@@ -1930,11 +1930,11 @@ BeachServer <- function(input,output, session){
         }else{
           if(length(loatextf)>0){
             loatextf<-file.path(local.path2, loatextf)
-            do.call(file.remove, as.list(loatextf))
+            try( do.call(file.remove, as.list(loatextf)) )
           }
           if(length(tm_png)>0){
             tm_png<-file.path(local.path3,tm_png)
-            do.call(file.remove, as.list(tm_png)) 
+            try( do.call(file.remove, as.list(tm_png)) )
           }
           return(paste('Done',cnt))
         }
@@ -2020,8 +2020,8 @@ indataset.i<<-indataset[[1]]; indataset.i<<-indataset.i[1:10,]\"></textarea>") )
       return(DT::dataTableOutput('brush_info'))
   })
   output$brush_info <- renderDataTable({
-    if(showBrush)
- #     print(trytry<<-input$dynamicPlot_brush) 
+     if(showBrush)
+      print(trytry<<-input$dynamicPlot_brush) 
     brush_points<<-brushedPoints(dynamicData, input$dynamicPlot_brush,
                   xvar=dynamicData.xvar, yvar=dynamicData.yvar)
     brush_points
@@ -2072,14 +2072,14 @@ indataset.i<<-indataset[[1]]; indataset.i<<-indataset.i[1:10,]\"></textarea>") )
       
 
      if(Vdic()$Type[i]=='Table'){
-        if(!file.exists(tab.name)){
+        #if(!file.exists(tab.name)){
           if(class(try(tmptab<-eval(parse(text=input0.code))))[1]=='try-error'){
             tmptab<-''
           }
-          save(tmptab, file=tab.name)
-        }else{
-          load(tab.name)
-        }
+        #  save(tmptab, file=tab.name)
+        #}else{
+        #  load(tab.name)
+        #}
         rd_tmptab <<- tmptab
         return(tmptab)
       }else{return(NULL)}
