@@ -60,7 +60,7 @@ BeachUI <- fluidPage(
     draggable = TRUE, top = "0%", left = "auto", right = "0%", bottom ="auto",
     width = "20%", height = "auto" , 
        p(style="color:black;",strong(myVersionCtr)),
-       checkboxInput("collSidebar", "Show left sidebar for data input", value=TRUE),
+       checkboxInput("collSidebar", "Show the sidebar for data input", value=TRUE),
        checkboxInput("useDT", "use renderDataTable", value=FALSE),
        radioButtons("ncol.widg.rd", "number of columns", c(1, 2, 3), inline=TRUE),
        sliderInput('wpW', 'Width of the widget panel', min=20, max=100, value=20, animate=TRUE),
