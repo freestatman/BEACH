@@ -1177,10 +1177,12 @@ BeachServer <- function(input,output, session){
         return(tmp)
       })
     }) # Add analysis by upload
+    myTTT <<- plyr::rbind.fill(loaAdd(),loaLoad())
+    if(!is.null(nrow(myTTT)))  myTTT <<- myTTT[, colnames(loaAdd())]
     
-    write.table(rbind(loaAdd(),loaLoad()),
-      loatext,append=TRUE,col.names=FALSE,row.names=FALSE)
-
+    write.table(myTTT,
+                loatext,append=TRUE,col.names=FALSE,row.names=FALSE)
+    
 
     if((is.null(input$add_analysis)||is.null(input$load_analysis)) || 
       input$add_analysis+input$load_analysis==0){
@@ -1270,7 +1272,8 @@ BeachServer <- function(input,output, session){
                      subCode=subRcode,
                      title=title0,devpath=devpath,
                      params1=params[params.ord], paramLabs1=params.lab[params.ord],
-                     outBcode=Vdic()$PlotCode[Vdic()$Num==1] )
+		     outBcode="")
+#                     outBcode=Vdic()$PlotCode[Vdic()$Num==1] )
       rcode<<-r_out  
       cat(r_out)
     }
